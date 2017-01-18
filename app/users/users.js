@@ -4,23 +4,23 @@
 
 
 module.exports = {
-    getAllUsers: function(req, res){
+    getAllUsers: (req,res) => {
 
     },
 
-    createUser: function(req, res){
+    createUser: (req, res) => {
 
     },
 
-    deleteUser: function(req, res){
+    deleteUser: (req, res) => {
 
     },
 
-    updateUser: function(req, res){
+    updateUser: (req, res) => {
 
     },
 
-    getSingleUser: function(req, res){
+    getSingleUser: (req,res) => {
 
     }
 }
