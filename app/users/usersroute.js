@@ -5,8 +5,9 @@
 
 const userrouter = require('express').Router();
 const users = require('./users');
+var logger = require('../../config/logger');
 userrouter.use(function(req, res, next){
-   console.log("This is a users router middleware");
+   logger.info("This is a users router middleware");
    next();
 });
 
@@ -20,6 +21,7 @@ userrouter.put('/:userid', users.updateUser);
 
 userrouter.delete('/:userid', users.deleteUser);
 
+module.exports = userrouter;
 
 
 

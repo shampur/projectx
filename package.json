@@ -22,6 +22,8 @@
     "fs": "0.0.1-security",
     "mongodb": "^2.2.21",
     "mongoose": "^4.7.7",
-    "multer": "^1.2.1"
+    "morgan": "^1.7.0",
+    "multer": "^1.2.1",
+    "winston": "^2.3.1"
   }
 }
