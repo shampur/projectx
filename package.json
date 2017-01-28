@@ -17,13 +17,16 @@
   },
   "homepage": "https://github.com/shampur/projectx#readme",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
+    "ejs": "^2.5.5",
     "express": "^4.14.0",
     "fs": "0.0.1-security",
     "mongodb": "^2.2.21",
     "mongoose": "^4.7.7",
     "morgan": "^1.7.0",
     "multer": "^1.2.1",
+    "nodemon": "^1.11.0",
     "winston": "^2.3.1"
   }
 }
