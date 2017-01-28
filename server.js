@@ -35,10 +35,10 @@ app.use(express.static(path.join(__dirname, 'client')));
 
 // This is an error handler for all the Internal server errors.
 app.use(function(err, req, res, next){
-    if(err.status !== '500' || err.status !== '501')
-        return next();
-
-    res.status(err.status).send(err.message || 'Internal server error');
+    if(err.status == '500' || err.status == '501')
+        res.status(err.status).send(err.message || 'Internal server error');
+    else
+        return next(err);
 });
 
 app.listen(port);

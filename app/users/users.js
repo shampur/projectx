@@ -4,32 +4,23 @@
 
 var userModel = require('./usersmodel');
 var logger = require('../../config/logger');
+var errorHandler = require('../../config/errorhandler');
 
 module.exports = {
     getAllUsers: function(req, res, next){
 
-        userModel.find({}).then(function(users){
-            logger.info('Users retrieved successfully');
-            res.send(users).status(200);
-        }, function(err){
-            logger.error('Getting users failed');
-            return next(new Error("Getting users failed").status=500);
-        });
-        /*
-        userModel.find({}, function(err, users){
-            if(err){
-                logger.error('Getting users failed');
-                return next(new Error("Getting users failed").status=500);
-            }
-            else {
+        userModel.find({})
+            .then(function(users){
                 logger.info('Users retrieved successfully');
                 res.send(users).status(200);
-            }
-        });
-        */
+            })
+            .catch(function(err){
+                logger.error(err.message);
+                return next(errorHandler("Getting users failed", 500));
+            });
     },
 
-    createUser: function(req, res){
+    createUser: function(req, res, next){
         var user = req.body;
         var newUser = new userModel({
             username: user.username,
@@ -38,85 +29,60 @@ module.exports = {
             city: user.city
         });
 
-        newUser.save().then(function(){
-            logger.info('User successfully added', {username: user.username});
-            res.json(user).status(201);
-        }, function (err) {
-            logger.error('Error saving user', {username: user.username});
-            return next(new Error("Error saving user").status=500);
-        });
-        /*
-        newUser.save(function (err){
-            if(err){
-                logger.error('Error saving user', {username: user.username});
-                return next(new Error("Error saving user").status=500);
-            }
-            else{
-                logger.warn('Error saving user', {username: user.username});
+        newUser.save()
+            .then(function(user){
+                logger.info('User successfully added', {username: user.username});
                 res.json(user).status(201);
-            }
-        });
-        */
+            })
+            .catch(function(err){
+                logger.error(err.message, {username: user.username});
+                return next(errorHandler("Error saving user", 500));
+            });
     },
 
-    deleteUser: function(req, res){
-        var userid = req.param['userid'];
-        userModel.remove({username: userid}).then(function(removed){
-            if(removed > 0){
-                logger.info('User Deleted', {username: req.param['userid']});
-                res.send(userid).status(200);
-            }
-            else{
-                logger.warn('Mongoose unable to delete user', {username: userid});
-                return next(new Error("Error deleting user").status=500);
-            }
-        }, function(err){
-            logger.error('Error with delete user endpoint');
-            return next(new Error("Error with delete user endpoint").status=500);
-        });
-        /*
-        userModel.remove({username: userid}, function(err, removed){
-            if(err){
-                logger.error('Error with delete user endpoint');
-                return next(new Error("Error with delete user endpoint").status=500);
-            }
-            if(removed > 0){
-                logger.info('User Deleted', {username: req.param['userid']});
-                res.send(userid).status(200);
-            }
-            else{
-                logger.warn('User Delete Failed', {username: userid});
-                return next(new Error("Error deleting user").status=500);
-            }
-        });
-        */
+    deleteUser: function(req, res, next){
+        var userid = req.params['userid'];
+        userModel.remove({username: userid})
+            .then(function(removed){
+                if(removed.result.n > 0){
+                    logger.info('User Deleted', {username: req.param['userid']});
+                    res.send(userid).status(200);
+                }
+                else{
+                    logger.warn('Mongoose unable to delete user', {username: userid});
+                    return next(errorHandler("Error deleting user", 500));
+                }
+            })
+            .catch(function(err){
+                logger.error(err.message, {username: userid});
+                return next(errorHandler("Error deleting user", 500));
+            });
     },
 
-    updateUser: function(req,res){
-
+    updateUser: function(req, res, next){
+        var userid = req.params['userid'];
+        var editedUser = req.body;
+        userModel.findOneAndUpdate({username: userid}, editedUser)
+                 .then(function(updatedUser){
+                     res.json(updatedUser).status(200);
+                     logger.info('User successfully updated', {username: userid});
+                 })
+                .catch(function(err){
+                    logger.error(err.message, {username: userid});
+                    return next(errorHandler("Error updating user", 500));
+                });
     },
 
-    getSingleUser: function(req,res){
-        var userid = req.param['userid'];
-
-        userModel.find({username: userid}).then(function(user){
-            logger.info('Single user get successfull', {username: userid});
-            res.send(user).status(200);
-        }, function(err){
-            logger.error('Error with get single user endpoint');
-            return next(new Error('Error with get single user endpoint').status = 500);
-        });
-        /*
-        userModel.find({username: userid}, function(err, user){
-            if(err){
-                logger.error('Error with get single user endpoint');
-                return next(new Error('Error with get single user endpoint').status = 500);
-            }
-            else{
+    getSingleUser: function(req, res, next){
+        var userid = req.params['userid'];
+        userModel.find({username: userid})
+            .then(function(user){
                 logger.info('Single user get successfull', {username: userid});
                 res.send(user).status(200);
-            }
-        });
-        */
+            })
+            .catch(function(err){
+                logger.error(err.message, {username: userid});
+                return next(errorHandler("Error getting user details", 500));
+            });
     }
 }

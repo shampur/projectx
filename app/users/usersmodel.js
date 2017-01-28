@@ -6,7 +6,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    username: String,
+    username: {
+        type: String,
+        index: true,
+        unique: true,
+        required: true
+    },
     firstname: String,
     lastname: String,
     city: String
